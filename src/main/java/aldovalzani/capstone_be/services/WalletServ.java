@@ -3,6 +3,7 @@ package aldovalzani.capstone_be.services;
 import aldovalzani.capstone_be.entities.Utente;
 import aldovalzani.capstone_be.entities.Wallet;
 import aldovalzani.capstone_be.exceptions.BadRequestException;
+import aldovalzani.capstone_be.exceptions.NotFoundException;
 import aldovalzani.capstone_be.repositories.WalletRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,5 +21,12 @@ public class WalletServ {
         newWallet.setUtente(utente);
         newWallet.setImporto(0.0);
         return walletRepo.save(newWallet);
+    }
+
+    public Wallet findWalletById(long idWallet) {
+        return walletRepo.findById(idWallet).orElseThrow(
+                () -> new NotFoundException
+                        (idWallet)
+        );
     }
 }
