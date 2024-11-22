@@ -1,4 +1,4 @@
-package aldovalzani.capstone_be.configurations;
+package aldovalzani.capstone_be.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
