@@ -32,7 +32,7 @@ public class UtenteServ {
             throw new BadRequestException("Username già in uso");
         }
 
-        Utente newUtente = this.utenteRepo.save(new Utente(body.username(), body.email(), body.password()));
+        Utente newUtente = this.utenteRepo.save(new Utente(body.username(), body.email(), bcrypt.encode(body.password()) ));
         walletServ.postWalletForUtente(newUtente);
         return newUtente;
     }
