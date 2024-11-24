@@ -1,11 +1,15 @@
 package aldovalzani.capstone_be.services;
 
+import aldovalzani.capstone_be.dto.LoginDTO;
 import aldovalzani.capstone_be.dto.UtenteDTO;
 import aldovalzani.capstone_be.entities.Utente;
 import aldovalzani.capstone_be.exceptions.BadRequestException;
 import aldovalzani.capstone_be.exceptions.NotFoundException;
+import aldovalzani.capstone_be.exceptions.UnauthorizedException;
 import aldovalzani.capstone_be.repositories.UtenteRepo;
+import aldovalzani.capstone_be.tools.JWT;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +18,11 @@ public class UtenteServ {
     private UtenteRepo utenteRepo;
     @Autowired
     private WalletServ walletServ;
+    @Autowired
+    private PasswordEncoder bcrypt;
+    @Autowired
+    private JWT jwt;
+
 
     public Utente postUtente(UtenteDTO body) {
         if (utenteRepo.findByEmail(body.email()).isPresent()) {
@@ -24,13 +33,29 @@ public class UtenteServ {
         }
 
         Utente newUtente = this.utenteRepo.save(new Utente(body.username(), body.email(), body.password()));
-        walletServ.postWalletForUtente(newUtente) ;
+        walletServ.postWalletForUtente(newUtente);
         return newUtente;
     }
 
-    public Utente findUtenteById (long idCliente){
+    public Utente findUtenteById(long idCliente) {
         return utenteRepo.findById(idCliente).orElseThrow(
-                ()->new NotFoundException(idCliente)
+                () -> new NotFoundException(idCliente)
         );
+
+    }
+
+    public Utente findUtenteByEmail(String email) {
+        return utenteRepo.findByEmail(email).orElseThrow(() -> new NotFoundException("Email Utente non trovata"));
+    }
+
+
+    public String checkCredentialAndGenerateToken(LoginDTO body){
+        Utente found = findUtenteByEmail(body.email());
+        if (bcrypt.matches(body.password(), found.getPassword())){
+            String accessToken = jwt.createToken(found);
+            return accessToken;
+        }else{
+            throw new UnauthorizedException("Credenziali errate!");
+        }
     }
 }
