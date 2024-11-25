@@ -17,7 +17,6 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.security.Security;
 
 @Component
 public class JWTCheckerFilter extends OncePerRequestFilter {
@@ -26,6 +25,10 @@ public class JWTCheckerFilter extends OncePerRequestFilter {
     @Autowired
     private UtenteServ utenteServ;
 
+    public JWTCheckerFilter(JWT jwt, UtenteServ utenteServ) {
+        this.jwt = jwt;
+        this.utenteServ = utenteServ;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
