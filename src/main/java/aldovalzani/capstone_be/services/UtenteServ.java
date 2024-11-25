@@ -9,6 +9,9 @@ import aldovalzani.capstone_be.exceptions.UnauthorizedException;
 import aldovalzani.capstone_be.repositories.UtenteRepo;
 import aldovalzani.capstone_be.tools.JWT;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +35,15 @@ public class UtenteServ {
             throw new BadRequestException("Username già in uso");
         }
 
-        Utente newUtente = this.utenteRepo.save(new Utente(body.username(), body.email(), bcrypt.encode(body.password()) ));
+        Utente newUtente = this.utenteRepo.save(new Utente(body.username(), body.email(), bcrypt.encode(body.password())));
         walletServ.postWalletForUtente(newUtente);
         return newUtente;
+    }
+
+    public Page<Utente> findAllUtenti(int page, int size) {
+        if (size > 30) size = 30;
+        Pageable pageable = PageRequest.of(page, size);
+        return  this.utenteRepo.findAll(pageable);
     }
 
     public Utente findUtenteById(long idCliente) {
@@ -49,12 +58,12 @@ public class UtenteServ {
     }
 
 
-    public String checkCredentialAndGenerateToken(LoginDTO body){
+    public String checkCredentialAndGenerateToken(LoginDTO body) {
         Utente found = findUtenteByEmail(body.email());
-        if (bcrypt.matches(body.password(), found.getPassword())){
+        if (bcrypt.matches(body.password(), found.getPassword())) {
             String accessToken = jwt.createToken(found);
             return accessToken;
-        }else{
+        } else {
             throw new UnauthorizedException("Credenziali errate!");
         }
     }
