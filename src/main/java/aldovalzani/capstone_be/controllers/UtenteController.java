@@ -20,17 +20,7 @@ public class UtenteController {
     @Autowired
     private UtenteServ utenteServ;
 
-    @PostMapping
-    public Utente creatUtenteWithWallet(@RequestBody @Validated UtenteDTO body,
-                                        BindingResult validationResult) {
-        if (validationResult.hasErrors()) {
-            String msg = validationResult.getAllErrors().stream().
-                    map(objectError -> objectError.getDefaultMessage()).
-                    collect(Collectors.joining(". "));
-            throw new BadRequestException("Ci sono stati errori nel payload " + msg);
-        }
-        return this.utenteServ.postUtente(body);
-    }
+
 
     @GetMapping("/{id_cliente}")
     public Utente findById(@PathVariable long id_cliente) {
