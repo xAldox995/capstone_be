@@ -2,10 +2,7 @@ package aldovalzani.capstone_be.entities;
 
 import aldovalzani.capstone_be.entities.enums.Ruolo;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +14,7 @@ import java.util.List;
 @Table(name = "utenti")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class Utente implements UserDetails {
     @Id

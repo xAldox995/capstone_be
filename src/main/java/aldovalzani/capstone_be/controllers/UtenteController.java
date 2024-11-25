@@ -18,13 +18,13 @@ public class UtenteController {
 
 
     @GetMapping("/{id_cliente}")
-    @PreAuthorize("hasAnyRole('CLIENTE','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('CLIENTE','ADMIN')")
     public Utente findById(@PathVariable long id_cliente) {
         return this.utenteServ.findUtenteById(id_cliente);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('CLIENTE','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('CLIENTE','ADMIN')")
     public Page<Utente> findAllUtenti(@RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "30") int size) {
         return this.utenteServ.findAllUtenti(page, size);

@@ -36,6 +36,8 @@ public class JWTCheckerFilter extends OncePerRequestFilter {
         jwt.verifyToken(accessToken);
         String utenteId = jwt.getIdFromToken(accessToken);
         Utente utenteCorrente = this.utenteServ.findUtenteById(Long.parseLong(utenteId));
+        System.out.printf("QUi");
+        System.out.printf(utenteCorrente.getAuthorities().toString());
         Authentication authentication = new UsernamePasswordAuthenticationToken(utenteCorrente, null, utenteCorrente.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
