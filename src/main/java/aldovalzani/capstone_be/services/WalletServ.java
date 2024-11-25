@@ -25,8 +25,20 @@ public class WalletServ {
 
     public Wallet findWalletById(long idWallet) {
         return walletRepo.findById(idWallet).orElseThrow(
-                () -> new NotFoundException
-                        (idWallet)
+                () -> new NotFoundException(idWallet)
         );
     }
+
+    public Wallet findByUtenteId(long idUtente) {
+        return walletRepo.findByUtente_Id(idUtente).orElseThrow(
+                () -> new NotFoundException("Wallet non trovato per id utente: " + idUtente)
+        );
+    }
+
+    public Wallet updateSaldo(long idWallet,double nuovoSaldo){
+        Wallet found = findWalletById(idWallet);
+        found.setImporto(nuovoSaldo);
+        return walletRepo.save(found);
+    }
+
 }

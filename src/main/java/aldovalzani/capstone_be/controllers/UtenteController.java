@@ -5,6 +5,7 @@ import aldovalzani.capstone_be.services.UtenteServ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /*
@@ -24,9 +25,14 @@ public class UtenteController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('CLIENTE','ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Page<Utente> findAllUtenti(@RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "30") int size) {
         return this.utenteServ.findAllUtenti(page, size);
+    }
+
+    @GetMapping("/me")
+    public Utente getProfile(@AuthenticationPrincipal Utente currentAuthenticalUtente){
+        return currentAuthenticalUtente;
     }
 }
