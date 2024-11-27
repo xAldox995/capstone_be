@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class ExceptionsHandler {
-    @ExceptionHandler(BadRequestException.class) // Tra le parentesi indico quale eccezione dovrà essere gestita da questo metodo
+    @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST) // 400
     public ErrorsResponseDTO handleBadrequest(BadRequestException ex) {
         return new ErrorsResponseDTO(ex.getMessage(), LocalDateTime.now());
@@ -38,7 +38,7 @@ public class ExceptionsHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR) // 500
     public ErrorsResponseDTO handleGeneric(Exception ex) {
-        ex.printStackTrace(); // Non dimentichiamoci che è estremamente utile sapere dove è stata generata un'eccezione per poterla facilmente fixare
+        ex.printStackTrace();
         return new ErrorsResponseDTO("Problema lato server! Giuro che risolveremo presto!", LocalDateTime.now());
     }
 
