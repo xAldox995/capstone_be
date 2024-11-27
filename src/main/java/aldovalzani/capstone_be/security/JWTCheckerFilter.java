@@ -41,7 +41,7 @@ public class JWTCheckerFilter extends OncePerRequestFilter {
         Utente utenteCorrente = this.utenteServ.findUtenteById(Long.parseLong(utenteId));
         System.out.printf("QUi");
         System.out.printf(utenteCorrente.getAuthorities().toString());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(utenteCorrente, null, utenteCorrente.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(utenteId, null, utenteCorrente.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
     }

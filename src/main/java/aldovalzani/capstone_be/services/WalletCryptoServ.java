@@ -1,12 +1,15 @@
 package aldovalzani.capstone_be.services;
 
 import aldovalzani.capstone_be.dto.WalletCryptoDTO;
+import aldovalzani.capstone_be.entities.Utente;
 import aldovalzani.capstone_be.entities.Wallet;
 import aldovalzani.capstone_be.entities.WalletCrypto;
 import aldovalzani.capstone_be.exceptions.BadRequestException;
+import aldovalzani.capstone_be.exceptions.UnauthorizedException;
 import aldovalzani.capstone_be.repositories.WalletCryptoRepo;
 import aldovalzani.capstone_be.tools.KeyGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
@@ -19,10 +22,17 @@ public class WalletCryptoServ {
     @Autowired
     private WalletServ walletServ;
     @Autowired
+    private UtenteServ utenteServ;
+    @Autowired
     private KeyGenerator keyGenerator;
 
     public WalletCrypto postWalletCrypto(long walletId, WalletCryptoDTO body) {
         Wallet walletfound = walletServ.findWalletById(walletId);
+        String idAutenticato = SecurityContextHolder.getContext().getAuthentication().getName();
+        Utente utenteAutenticato = utenteServ.findUtenteById(Long.parseLong(idAutenticato));
+        if (walletfound.getUtente().getId() != utenteAutenticato.getId()) {
+            throw new UnauthorizedException("Non sei autorizzato ad accedere a questo wallet");
+        }
         walletCryptoRepo.findByNomeCryptoAndWallet_Id(body.nome(), walletId).
                 ifPresent(walletCrypto -> {
                     throw new BadRequestException("La cryptovaluta è già presente ne wallet");
