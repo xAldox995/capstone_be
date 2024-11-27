@@ -1,8 +1,6 @@
 package aldovalzani.capstone_be.controllers;
 
-import aldovalzani.capstone_be.entities.Utente;
 import aldovalzani.capstone_be.entities.Wallet;
-import aldovalzani.capstone_be.services.UtenteServ;
 import aldovalzani.capstone_be.services.WalletServ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
