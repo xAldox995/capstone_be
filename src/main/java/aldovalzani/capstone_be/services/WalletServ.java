@@ -1,5 +1,6 @@
 package aldovalzani.capstone_be.services;
 
+import aldovalzani.capstone_be.dto.WalletDTO;
 import aldovalzani.capstone_be.entities.Utente;
 import aldovalzani.capstone_be.entities.Wallet;
 import aldovalzani.capstone_be.exceptions.BadRequestException;
@@ -35,10 +36,16 @@ public class WalletServ {
         );
     }
 
-    public Wallet updateSaldo(long idWallet,double nuovoSaldo){
-        Wallet found = findWalletById(idWallet);
-        found.setImporto(nuovoSaldo);
-        return walletRepo.save(found);
+    public Wallet getWalletByUtente(Utente utenteAutenticato) {
+        return walletRepo.findByUtente_Id(utenteAutenticato.getId())
+                .orElseThrow(() -> new NotFoundException(utenteAutenticato.getId()));
     }
+
+    public Wallet updateWallet(Utente utenteAutenticato, WalletDTO body) {
+        Wallet wallet = getWalletByUtente(utenteAutenticato);
+        wallet.setImporto(body.importo());
+        return walletRepo.save(wallet);
+    }
+
 
 }

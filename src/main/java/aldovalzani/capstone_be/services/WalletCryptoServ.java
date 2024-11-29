@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
@@ -27,16 +26,13 @@ public class WalletCryptoServ {
     @Autowired
     private WalletServ walletServ;
     @Autowired
-    private UtenteServ utenteServ;
-
-    @Autowired
     private KeyGenerator keyGenerator;
 
-    public WalletCrypto postWalletCrypto(long utenteId, WalletCryptoDTO body) {
-        Wallet walletfound = walletServ.findByUtenteId(utenteId);
+    public WalletCrypto postWalletCrypto(Utente utenteAutenticato, WalletCryptoDTO body) {
+        Wallet walletfound = walletServ.getWalletByUtente(utenteAutenticato);
         walletCryptoRepo.findByNomeCryptoAndWallet_Id(body.nome(), walletfound.getId()).
                 ifPresent(walletCrypto -> {
-                    throw new BadRequestException("La cryptovaluta è già presente ne wallet");
+                    throw new BadRequestException("La cryptovaluta è già presente nel wallet");
                 });
         KeyPair keyPair = keyGenerator.generateKeyPair();
         String indirizzo = keyGenerator.generateAddress(keyPair.getPublic());
@@ -52,30 +48,34 @@ public class WalletCryptoServ {
         return walletCryptoRepo.save(newWalletCrypto);
     }
 
-    public List<WalletCrypto> findAllWalletsCrypto(long utenteId/*,int page, int size*/) {
+    public List<WalletCrypto> findAllWalletsCrypto(Utente utenteAutenticato/*,int page, int size*/) {
 //        if (size > 10) size = 10;
 //        Pageable pageable = PageRequest.of(page, size);
-        Wallet walletfound = walletServ.findByUtenteId(utenteId);
+        Wallet walletfound = walletServ.getWalletByUtente(utenteAutenticato);
         return this.walletCryptoRepo.findAllByWallet_id(walletfound.getId());
     }
 
 
-    public WalletCrypto getWalletCryptoById(long walletCryptoId) {
+    public WalletCrypto getWalletCryptoById(Utente utenteAutenticato, long walletCryptoId) {
         WalletCrypto walletCryptoFound = walletCryptoRepo.findById(walletCryptoId)
                 .orElseThrow(() -> new NotFoundException(walletCryptoId));
-        return  walletCryptoFound;
+        if (walletCryptoFound.getWallet().getUtente().getId() != utenteAutenticato.getId()) {
+            throw new UnauthorizedException("Non sei autorizzato ad accedere a questo wallet");
+        }
+        return walletCryptoFound;
     }
 
-    public WalletCrypto updateWalletCrypto(long walletCryptoId, WalletCryptoDTO body) {
-        WalletCrypto walletCrypto = getWalletCryptoById(walletCryptoId);
+    public WalletCrypto updateWalletCrypto(Utente utenteAutenticato, long walletCryptoId, WalletCryptoDTO body) {
+        WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
         walletCrypto.setSaldo(body.saldo());
         return walletCryptoRepo.save(walletCrypto);
     }
 
-    public void deleteWalletCrypto(long walletCryptoId) {
-        WalletCrypto walletCrypto = getWalletCryptoById(walletCryptoId);
+    public void deleteWalletCrypto(Utente utenteAutenticato, long walletCryptoId) {
+        WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
         walletCryptoRepo.delete(walletCrypto);
     }
 }
+
 
 

@@ -8,7 +8,7 @@ import aldovalzani.capstone_be.services.WalletCryptoServ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,38 +26,27 @@ public class WalletCryptoController {
     private WalletCryptoServ walletCryptoServ;
 
     @PostMapping
-    public WalletCrypto postWalletCrypto(@RequestBody @Validated WalletCryptoDTO body,
-                                         BindingResult validationResult) {
-        if (validationResult.hasErrors()) {
-            String msg = validationResult.getAllErrors().stream().
-                    map(objectError -> objectError.getDefaultMessage()).
-                    collect(Collectors.joining(". "));
-            throw new BadRequestException("Ci sono stati errori nel payload " + msg);
-        }
-        String utenteIdAutenticato = SecurityContextHolder.getContext().getAuthentication().getName();
-        return this.walletCryptoServ.postWalletCrypto(Long.parseLong(utenteIdAutenticato), body);
+    public WalletCrypto postWalletCrypto(@AuthenticationPrincipal Utente utenteAutenticato, @RequestBody WalletCryptoDTO body) {
+        return walletCryptoServ.postWalletCrypto(utenteAutenticato, body);
     }
 
     @GetMapping
-    public List<WalletCrypto> findAllWalletsCrypto(/*@RequestParam(defaultValue = "0") int page,
-                                                   @RequestParam(defaultValue = "10") int size*/) {
-        String utenteIdAutenticato = SecurityContextHolder.getContext().getAuthentication().getName();
-        return this.walletCryptoServ.findAllWalletsCrypto(Long.parseLong(utenteIdAutenticato));
+    public List<WalletCrypto> getAllWalletCryptos(@AuthenticationPrincipal Utente utenteAutenticato) {
+        return walletCryptoServ.findAllWalletsCrypto(utenteAutenticato);
     }
 
     @GetMapping("/{walletCryptoId}")
-    public WalletCrypto getWalletCryptoById(@PathVariable long walletCryptoId) {
-        return walletCryptoServ.getWalletCryptoById(walletCryptoId);
+    public WalletCrypto getWalletCryptoById(@AuthenticationPrincipal Utente utenteAutenticato, @PathVariable long walletCryptoId) {
+        return walletCryptoServ.getWalletCryptoById(utenteAutenticato, walletCryptoId);
     }
 
     @PutMapping("/{walletCryptoId}")
-    public WalletCrypto updateWalletCrypto(@PathVariable long walletCryptoId, @RequestBody WalletCryptoDTO body) {
-        return walletCryptoServ.updateWalletCrypto(walletCryptoId, body);
+    public WalletCrypto updateWalletCrypto(@AuthenticationPrincipal Utente utenteAutenticato, @PathVariable long walletCryptoId, @RequestBody WalletCryptoDTO body) {
+        return walletCryptoServ.updateWalletCrypto(utenteAutenticato, walletCryptoId, body);
     }
 
     @DeleteMapping("/{walletCryptoId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteWalletCrypto(@PathVariable long walletCryptoId) {
-        walletCryptoServ.deleteWalletCrypto(walletCryptoId);
+    public void deleteWalletCrypto(@AuthenticationPrincipal Utente utenteAutenticato, @PathVariable long walletCryptoId) {
+        walletCryptoServ.deleteWalletCrypto(utenteAutenticato, walletCryptoId);
     }
 }
