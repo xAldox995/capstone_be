@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /*
-http://localhost:3001/wallets/cryptos
+http://localhost:3001/wallets/me/cryptos
  */
 @RestController
 @RequestMapping("/wallets/me/cryptos")

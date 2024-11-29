@@ -18,6 +18,7 @@ public class WalletCrypto {
     private long id;
     @Column(name = "nome_crypto")
     private String nomeCrypto;
+    private String simbolo;
     private double saldo; //-> indico la quantità di crypto che detiene il cliente
     private String indirizzo; //-> indirizzo della blockchain
     @Column(name = "public_key")
@@ -29,8 +30,9 @@ public class WalletCrypto {
     @JoinColumn(name = "id_wallet")
     private Wallet wallet;
 
-    public WalletCrypto(String nomeCrypto, double saldo, String indirizzo, String publicKey, String privateKey, Wallet wallet) {
+    public WalletCrypto(String nomeCrypto, String simbolo, double saldo, String indirizzo, String publicKey, String privateKey, Wallet wallet) {
         this.nomeCrypto = nomeCrypto;
+        this.simbolo =simbolo;
         this.saldo = saldo;
         this.indirizzo = indirizzo;
         this.publicKey = publicKey;

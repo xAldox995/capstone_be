@@ -39,6 +39,7 @@ public class WalletCryptoServ {
 
         WalletCrypto newWalletCrypto = new WalletCrypto();
         newWalletCrypto.setNomeCrypto(body.nome());
+        newWalletCrypto.setSimbolo(body.nome());
         newWalletCrypto.setSaldo(body.saldo());
         newWalletCrypto.setIndirizzo(indirizzo);
         newWalletCrypto.setPublicKey(Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded()));
