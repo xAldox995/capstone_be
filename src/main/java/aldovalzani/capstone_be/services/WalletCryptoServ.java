@@ -28,15 +28,13 @@ public class WalletCryptoServ {
     private WalletServ walletServ;
     @Autowired
     private UtenteServ utenteServ;
-    @Autowired
-    private AuthService authService;
+
     @Autowired
     private KeyGenerator keyGenerator;
 
-    public WalletCrypto postWalletCrypto(long walletId, WalletCryptoDTO body) {
-        Wallet walletfound = walletServ.findWalletById(walletId);
-        authService.validateUserAccessToWallet(walletfound);
-        walletCryptoRepo.findByNomeCryptoAndWallet_Id(body.nome(), walletId).
+    public WalletCrypto postWalletCrypto(long utenteId, WalletCryptoDTO body) {
+        Wallet walletfound = walletServ.findByUtenteId(utenteId);
+        walletCryptoRepo.findByNomeCryptoAndWallet_Id(body.nome(), walletfound.getId()).
                 ifPresent(walletCrypto -> {
                     throw new BadRequestException("La cryptovaluta è già presente ne wallet");
                 });
@@ -54,34 +52,28 @@ public class WalletCryptoServ {
         return walletCryptoRepo.save(newWalletCrypto);
     }
 
-    public List<WalletCrypto> findAllWalletsCrypto(long walletId/*,int page, int size*/) {
+    public List<WalletCrypto> findAllWalletsCrypto(long utenteId/*,int page, int size*/) {
 //        if (size > 10) size = 10;
 //        Pageable pageable = PageRequest.of(page, size);
-        Wallet walletfound = walletServ.findWalletById(walletId);
-        authService.validateUserAccessToWallet(walletfound);
-        return this.walletCryptoRepo.findAllByWallet_id(walletId);
+        Wallet walletfound = walletServ.findByUtenteId(utenteId);
+        return this.walletCryptoRepo.findAllByWallet_id(walletfound.getId());
     }
 
 
     public WalletCrypto getWalletCryptoById(long walletCryptoId) {
         WalletCrypto walletCryptoFound = walletCryptoRepo.findById(walletCryptoId)
                 .orElseThrow(() -> new NotFoundException(walletCryptoId));
-        authService.validateUserAccessToWallet(walletCryptoFound.getWallet());
         return  walletCryptoFound;
     }
 
     public WalletCrypto updateWalletCrypto(long walletCryptoId, WalletCryptoDTO body) {
         WalletCrypto walletCrypto = getWalletCryptoById(walletCryptoId);
-
-        authService.validateUserAccessToWallet(walletCrypto.getWallet());
-
         walletCrypto.setSaldo(body.saldo());
         return walletCryptoRepo.save(walletCrypto);
     }
 
     public void deleteWalletCrypto(long walletCryptoId) {
         WalletCrypto walletCrypto = getWalletCryptoById(walletCryptoId);
-        authService.validateUserAccessToWallet(walletCrypto.getWallet());
         walletCryptoRepo.delete(walletCrypto);
     }
 }

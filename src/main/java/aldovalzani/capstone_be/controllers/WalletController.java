@@ -3,6 +3,7 @@ package aldovalzani.capstone_be.controllers;
 import aldovalzani.capstone_be.entities.Wallet;
 import aldovalzani.capstone_be.services.WalletServ;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,12 @@ http://localhost:3001/wallets
 public class WalletController {
     @Autowired
     private WalletServ walletServ;
+
+    @GetMapping("/me")
+    public Wallet findWalletByMe(){
+        String idWalletAutenticato= SecurityContextHolder.getContext().getAuthentication().getName();
+        return walletServ.findByUtenteId(Long.parseLong(idWalletAutenticato));
+    }
 
     @GetMapping("/{id_wallet}")
     public Wallet findWalletById(@PathVariable long id_wallet) {

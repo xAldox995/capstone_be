@@ -8,6 +8,7 @@ import aldovalzani.capstone_be.services.WalletCryptoServ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +20,13 @@ import java.util.stream.Collectors;
 http://localhost:3001/wallets/cryptos
  */
 @RestController
-@RequestMapping("/wallets/{wallet_id}/cryptos")
+@RequestMapping("/wallets/me/cryptos")
 public class WalletCryptoController {
     @Autowired
     private WalletCryptoServ walletCryptoServ;
 
     @PostMapping
-    public WalletCrypto postWalletCrypto(@PathVariable long wallet_id,
-                                         @RequestBody @Validated WalletCryptoDTO body,
+    public WalletCrypto postWalletCrypto(@RequestBody @Validated WalletCryptoDTO body,
                                          BindingResult validationResult) {
         if (validationResult.hasErrors()) {
             String msg = validationResult.getAllErrors().stream().
@@ -34,14 +34,15 @@ public class WalletCryptoController {
                     collect(Collectors.joining(". "));
             throw new BadRequestException("Ci sono stati errori nel payload " + msg);
         }
-        return this.walletCryptoServ.postWalletCrypto(wallet_id, body);
+        String utenteIdAutenticato = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.walletCryptoServ.postWalletCrypto(Long.parseLong(utenteIdAutenticato), body);
     }
 
     @GetMapping
-    public List<WalletCrypto> findAllWalletsCrypto(@PathVariable long wallet_id/*,
-                                                   @RequestParam(defaultValue = "0") int page,
+    public List<WalletCrypto> findAllWalletsCrypto(/*@RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size*/) {
-        return this.walletCryptoServ.findAllWalletsCrypto(wallet_id);
+        String utenteIdAutenticato = SecurityContextHolder.getContext().getAuthentication().getName();
+        return this.walletCryptoServ.findAllWalletsCrypto(Long.parseLong(utenteIdAutenticato));
     }
 
     @GetMapping("/{walletCryptoId}")
