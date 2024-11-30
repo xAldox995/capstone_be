@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "wallets")
 @Getter
@@ -20,6 +22,8 @@ public class Wallet {
     @JoinColumn(name = "id_utente",referencedColumnName = "id")
     private Utente utente;
     private double importo;
+    @OneToMany(mappedBy = "wallet",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<WalletCrypto> walletCryptoList;
 
     public Wallet(Utente utente, double importo) {
         this.utente = utente;

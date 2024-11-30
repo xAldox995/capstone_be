@@ -41,9 +41,15 @@ public class WalletServ {
                 .orElseThrow(() -> new NotFoundException(utenteAutenticato.getId()));
     }
 
-    public Wallet updateWallet(Utente utenteAutenticato, WalletDTO body) {
+    public Wallet updateWalletImporto(Utente utenteAutenticato, WalletDTO body) {
         Wallet wallet = getWalletByUtente(utenteAutenticato);
         wallet.setImporto(body.importo());
+        return walletRepo.save(wallet);
+    }
+
+    public Wallet aggiornaSaldoWallet(Utente utenteAutenticato, double variazioneImporto) {
+        Wallet wallet = getWalletByUtente(utenteAutenticato);
+        wallet.setImporto(wallet.getImporto() + variazioneImporto);
         return walletRepo.save(wallet);
     }
 

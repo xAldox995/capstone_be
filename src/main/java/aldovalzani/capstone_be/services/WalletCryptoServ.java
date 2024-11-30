@@ -72,6 +72,18 @@ public class WalletCryptoServ {
         return walletCryptoRepo.save(walletCrypto);
     }
 
+    public WalletCrypto updateWalletCryptoSaldo(Utente utenteAutenticato, long walletCryptoId, double saldo) {
+        WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
+        walletCrypto.setSaldo(saldo);
+        return walletCryptoRepo.save(walletCrypto);
+    }
+
+    public WalletCrypto aggiornaSaldoWalletCrypto(Utente utenteAutenticato, long walletCryptoId, double variazioneSaldo) {
+        WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
+        walletCrypto.setSaldo(walletCrypto.getSaldo() + variazioneSaldo);
+        return walletCryptoRepo.save(walletCrypto);
+    }
+
     public void deleteWalletCrypto(Utente utenteAutenticato, long walletCryptoId) {
         WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
         walletCryptoRepo.delete(walletCrypto);

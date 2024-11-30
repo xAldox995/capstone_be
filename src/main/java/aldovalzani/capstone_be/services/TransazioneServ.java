@@ -20,18 +20,19 @@ public class TransazioneServ {
     @Autowired
     private WalletServ walletServ;
 
-    public Transazione postTransazione(Utente utenteAutenticato, long walletCryptoId, TransazioneDTO body){
-        WalletCrypto walletCryptoFound = walletCryptoServ.getWalletCryptoById(utenteAutenticato, walletCryptoId);
+    public Transazione postTransazione(Utente utenteAutenticato, long walletCryptoId, TransazioneDTO body, String tipoOperazione) {
+        // RECUPERIAMO I DATI ESSENZIALI (WALLET, WALLETCRYPTO E IL VALORE DELLA TRANSAZIONE)
         Wallet walletFound = walletServ.getWalletByUtente(utenteAutenticato);
-        if (walletCryptoFound.getSaldo()< body.quantita()){
-          throw new BadRequestException("Saldo insufficiente");
-        }
-        Transazione newTransazione = new Transazione(walletFound,walletCryptoFound, body.quantita(), body.prezzo());
+        WalletCrypto walletCryptoFound = walletCryptoServ.getWalletCryptoById(utenteAutenticato, walletCryptoId);
+        double transactionValue = body.quantita() * body.prezzo();
 
-        walletCryptoFound.setSaldo(walletCryptoFound.getSaldo()- body.quantita());
-        walletCryptoServ.updateWalletCrypto(utenteAutenticato,walletCryptoId, new WalletCryptoDTO(
-                walletCryptoFound.getWallet().getId(),walletCryptoFound.getNomeCrypto(),walletCryptoFound.getSimbolo() ,walletCryptoFound.getSaldo()
-        ));
-        return transazioneRepo.save(newTransazione);
+        //CONTROLLO DI ACQUISTO SULLA CRYPTO
+        if (tipoOperazione.equalsIgnoreCase("ACQUISTO")) {
+            if (walletFound.getImporto() < transactionValue){
+                throw new BadRequestException("Saldo del wallet insuficcente per completare la transazione");
+            }
+            
+        }
     }
+
 }
