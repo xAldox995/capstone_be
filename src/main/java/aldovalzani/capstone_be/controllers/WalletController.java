@@ -19,14 +19,13 @@ public class WalletController {
     private WalletServ walletServ;
 
     @GetMapping("/me")
-    public Wallet findWalletByMe(){
-        String idWalletAutenticato= SecurityContextHolder.getContext().getAuthentication().getName();
-        return walletServ.findByUtenteId(Long.parseLong(idWalletAutenticato));
+    public Wallet findWalletByMe(@AuthenticationPrincipal Utente utenteAutenticato){
+        return walletServ.getWalletByUtente(utenteAutenticato);
     }
 
-    @PutMapping("/me")
-    public Wallet updateWallet(@AuthenticationPrincipal Utente utenteAutenticato, @RequestBody WalletDTO body) {
-        return walletServ.updateWallet(utenteAutenticato, body);
+    @PatchMapping("/me/saldo")
+    public Wallet updateWalletSaldo(@AuthenticationPrincipal Utente utenteAutenticato, @RequestBody WalletDTO body) {
+        return walletServ.updateWalletImporto(utenteAutenticato, body);
     }
 
     @GetMapping("/{id_wallet}")

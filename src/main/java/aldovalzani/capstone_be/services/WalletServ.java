@@ -42,10 +42,11 @@ public class WalletServ {
     }
 
     public Wallet updateWalletImporto(Utente utenteAutenticato, WalletDTO body) {
-        Wallet wallet = getWalletByUtente(utenteAutenticato);
-        wallet.setImporto(body.importo());
-        return walletRepo.save(wallet);
+        Wallet walletFound = getWalletByUtente(utenteAutenticato);
+        walletFound.setImporto(walletFound.getImporto() + body.importo());
+        return walletRepo.save(walletFound);
     }
+
 
     public Wallet aggiornaSaldoWallet(Utente utenteAutenticato, double variazioneImporto) {
         Wallet wallet = getWalletByUtente(utenteAutenticato);

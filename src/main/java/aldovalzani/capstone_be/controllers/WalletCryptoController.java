@@ -3,7 +3,7 @@ package aldovalzani.capstone_be.controllers;
 import aldovalzani.capstone_be.dto.WalletCryptoDTO;
 import aldovalzani.capstone_be.entities.Utente;
 import aldovalzani.capstone_be.entities.WalletCrypto;
-import aldovalzani.capstone_be.exceptions.BadRequestException;
+import aldovalzani.capstone_be.exceptions.UnauthorizedException;
 import aldovalzani.capstone_be.services.WalletCryptoServ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +27,10 @@ public class WalletCryptoController {
 
     @PostMapping
     public WalletCrypto postWalletCrypto(@AuthenticationPrincipal Utente utenteAutenticato, @RequestBody WalletCryptoDTO body) {
+        if (utenteAutenticato == null) {
+            throw new UnauthorizedException("Utente non autenticato");
+        }
+        System.out.println("Utente autenticato: " + utenteAutenticato);
         return walletCryptoServ.postWalletCrypto(utenteAutenticato, body);
     }
 

@@ -28,11 +28,27 @@ public class TransazioneServ {
 
         //CONTROLLO DI ACQUISTO SULLA CRYPTO
         if (tipoOperazione.equalsIgnoreCase("ACQUISTO")) {
-            if (walletFound.getImporto() < transactionValue){
+            if (walletFound.getImporto() < transactionValue) {
                 throw new BadRequestException("Saldo del wallet insuficcente per completare la transazione");
             }
-            
+            walletCryptoServ.aggiornaSaldoWalletCrypto(utenteAutenticato, walletCryptoId, body.quantita());
+            walletServ.aggiornaSaldoWallet(utenteAutenticato, -transactionValue);
         }
+        //CONTROLLO SULLA VENDITA DI CRYPTO
+        else if (tipoOperazione.equalsIgnoreCase("VENDITA")) {
+            if (walletCryptoFound.getSaldo() < body.quantita()) {
+                throw new BadRequestException("Quantità insufficente di criptovaluta per completare la vendita");
+            }
+            walletCryptoServ.aggiornaSaldoWalletCrypto(utenteAutenticato, walletCryptoId, -body.quantita());
+            walletServ.aggiornaSaldoWallet(utenteAutenticato, transactionValue);
+        }
+        // CASO DI OPERAZIONE NON VALIDA
+        else {
+            throw new BadRequestException("Tipo di operazione non valida. Deve essere un acquisto o una vendita");
+        }
+        //CREO E SALVO LA TRANSAZIONE
+        Transazione newTransazione =new Transazione(walletFound,walletCryptoFound, body.quantita(), body.prezzo());
+        return transazioneRepo.save(newTransazione);
     }
 
 }

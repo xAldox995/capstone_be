@@ -18,7 +18,7 @@ public class TransazioneController {
     private TransazioneServ transazioneServ;
 
     @PostMapping
-    public Transazione postTransazione (@AuthenticationPrincipal Utente utenteAutenticato, @PathVariable long walletCryptoId, @RequestBody TransazioneDTO body){
-        return transazioneServ.postTransazioneAcquisto(utenteAutenticato, walletCryptoId, body);
+    public Transazione postTransazione(@AuthenticationPrincipal Utente utenteAutenticato, @PathVariable long walletCryptoId, @RequestBody TransazioneDTO body, @RequestBody String tipoOperazione) {
+        return transazioneServ.postTransazione(utenteAutenticato, walletCryptoId, body, tipoOperazione);
     }
 }
