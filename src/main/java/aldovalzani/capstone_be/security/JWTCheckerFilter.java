@@ -25,26 +25,32 @@ public class JWTCheckerFilter extends OncePerRequestFilter {
     @Autowired
     private UtenteServ utenteServ;
 
-    public JWTCheckerFilter(JWT jwt, UtenteServ utenteServ) {
-        this.jwt = jwt;
-        this.utenteServ = utenteServ;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer "))
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new UnauthorizedException("Inserire token nell'Authorization Header nel formato corretto");
+        }
         String accessToken = authHeader.substring(7);
         jwt.verifyToken(accessToken);
         String utenteId = jwt.getIdFromToken(accessToken);
         Utente utenteCorrente = this.utenteServ.findUtenteById(Long.parseLong(utenteId));
-        System.out.printf("QUi");
-        System.out.printf(utenteCorrente.getAuthorities().toString());
+
+        if (utenteCorrente == null) {
+            throw new UnauthorizedException("L'utente non è valido o non esiste.");
+        }
+
+        // Stampa di debug per verificare l'utente corrente
+        System.out.println("Utente corrente: " + utenteCorrente);
+
         Authentication authentication = new UsernamePasswordAuthenticationToken(utenteCorrente, null, utenteCorrente.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
         filterChain.doFilter(request, response);
     }
+
 
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return new AntPathMatcher().match("/auth/**", request.getServletPath());

@@ -1,5 +1,7 @@
 package aldovalzani.capstone_be.entities;
 
+import aldovalzani.capstone_be.entities.enums.Ruolo;
+import aldovalzani.capstone_be.entities.enums.TipoTransazione;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,14 +29,17 @@ public class Transazione {
     private WalletCrypto walletCrypto;
     private double quantita;
     private double prezzo;
+    @Enumerated(EnumType.STRING)
+    private TipoTransazione tipoTransazione;
     @Column(name = "data_acquisto")
     private LocalDateTime dataAcquisto;
 
-    public Transazione(Wallet wallet, WalletCrypto walletCrypto, double quantita, double prezzo) {
+    public Transazione(Wallet wallet, WalletCrypto walletCrypto, double quantita, double prezzo, TipoTransazione tipoTransazione) {
         this.wallet = wallet;
         this.walletCrypto = walletCrypto;
         this.quantita = quantita;
         this.prezzo = prezzo;
+        this.tipoTransazione=tipoTransazione;
         this.dataAcquisto = LocalDateTime.now();
     }
 }
