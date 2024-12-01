@@ -11,6 +11,8 @@ import aldovalzani.capstone_be.repositories.TransazioneRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class TransazioneServ {
     @Autowired
@@ -19,13 +21,28 @@ public class TransazioneServ {
     private WalletCryptoServ walletCryptoServ;
     @Autowired
     private WalletServ walletServ;
+    @Autowired
+    private CryptoCompareServ cryptoCompareServ;
 
-    public Transazione postTransazione(Utente utenteAutenticato, long walletCryptoId, TransazioneDTO body) {
+    public Transazione postTransazione(Utente utenteAutenticato, long walletCryptoId, TransazioneDTO body, String symbol, String currency) {
         // RECUPERIAMO I DATI ESSENZIALI (WALLET, WALLETCRYPTO E IL VALORE DELLA TRANSAZIONE)
         Wallet walletFound = walletServ.getWalletByUtente(utenteAutenticato);
         WalletCrypto walletCryptoFound = walletCryptoServ.getWalletCryptoById(utenteAutenticato, walletCryptoId);
-        TipoTransazione tipoTransazione= TipoTransazione.stringToEnum(body.tipoTransazione());
-        double transactionValue = body.quantita() * body.prezzo();
+        TipoTransazione tipoTransazione = TipoTransazione.stringToEnum(body.tipoTransazione());
+
+
+        //Controllo il symbol che se non lo metto come param nel URL lo setta tramite il DTO
+        if (symbol == null) {
+            symbol = walletCryptoFound.getSimbolo();
+        }
+        //OTTENGO IL PREZZO DELLA CRYPTO TRAMITE CRYPTO COMPARE E CALCOLO IL TOT TRANSAZIONE
+        Map<String, Double> priceMap = cryptoCompareServ.getCryptoPrice(symbol, currency);
+        Double prezzoCorrente = priceMap.get(currency);
+
+        if (prezzoCorrente == null) {
+            throw new BadRequestException("Errore nel recupero del prezzo della criptovaluta per la valuta specificata: " + currency);
+        }
+        double transactionValue = body.quantita() * prezzoCorrente;
 
         //CONTROLLO SE E' UN ACQUISTO SULLA CRYPTO
         if (tipoTransazione == TipoTransazione.ACQUISTO) {
@@ -48,7 +65,7 @@ public class TransazioneServ {
             throw new BadRequestException("Tipo di operazione non valida. Deve essere un acquisto o una vendita");
         }
         //CREO E SALVO LA TRANSAZIONE
-        Transazione newTransazione =new Transazione(walletFound,walletCryptoFound, body.quantita(), body.prezzo(),tipoTransazione);
+        Transazione newTransazione = new Transazione(walletFound, walletCryptoFound, body.quantita(), body.prezzo(), tipoTransazione);
         return transazioneRepo.save(newTransazione);
     }
 

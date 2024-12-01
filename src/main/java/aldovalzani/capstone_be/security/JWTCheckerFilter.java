@@ -41,7 +41,6 @@ public class JWTCheckerFilter extends OncePerRequestFilter {
             throw new UnauthorizedException("L'utente non è valido o non esiste.");
         }
 
-        // Stampa di debug per verificare l'utente corrente
         System.out.println("Utente corrente: " + utenteCorrente);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(utenteCorrente, null, utenteCorrente.getAuthorities());

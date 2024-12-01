@@ -7,6 +7,6 @@ public record TransazioneDTO(
         @NotNull long idWallet,
         @NotNull long idCrypto,
         @NotNull double quantita,
-        @NotNull double prezzo,
+        double prezzo,
         @NotBlank String tipoTransazione
 ) {}
