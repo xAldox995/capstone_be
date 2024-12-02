@@ -28,19 +28,15 @@ public class WalletCryptoServ {
     @Autowired
     private KeyGenerator keyGenerator;
 
-    public WalletCrypto postWalletCrypto(Utente utenteAutenticato, WalletCryptoDTO body) {
+    public WalletCrypto postWalletCrypto(Utente utenteAutenticato, String simbolo,double saldo) {
         Wallet walletfound = walletServ.getWalletByUtente(utenteAutenticato);
-        walletCryptoRepo.findByNomeCryptoAndWallet_Id(body.nome(), walletfound.getId()).
-                ifPresent(walletCrypto -> {
-                    throw new BadRequestException("La cryptovaluta è già presente nel wallet");
-                });
+
         KeyPair keyPair = keyGenerator.generateKeyPair();
         String indirizzo = keyGenerator.generateAddress(keyPair.getPublic());
 
         WalletCrypto newWalletCrypto = new WalletCrypto();
-        newWalletCrypto.setNomeCrypto(body.nome());
-        newWalletCrypto.setSimbolo(body.nome());
-        newWalletCrypto.setSaldo(body.saldo());
+        newWalletCrypto.setSimbolo(simbolo);
+        newWalletCrypto.setSaldo(saldo);
         newWalletCrypto.setIndirizzo(indirizzo);
         newWalletCrypto.setPublicKey(Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded()));
         newWalletCrypto.setPrivateKey(Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded()));
@@ -54,6 +50,13 @@ public class WalletCryptoServ {
 //        Pageable pageable = PageRequest.of(page, size);
         Wallet walletfound = walletServ.getWalletByUtente(utenteAutenticato);
         return this.walletCryptoRepo.findAllByWallet_id(walletfound.getId());
+    }
+
+    public WalletCrypto findWalletCryptoBySimbolo(Utente utenteAutenticato, String simbolo){
+        Wallet walletFound = walletServ.getWalletByUtente(utenteAutenticato);
+        return walletCryptoRepo.findBySimboloAndWallet_Id(simbolo,walletFound.getId()).orElseThrow(
+                ()-> new NotFoundException("WalletCrypto con simbolo " + simbolo + " non trovato per l'utente.")
+        );
     }
 
 
@@ -72,22 +75,38 @@ public class WalletCryptoServ {
         return walletCryptoRepo.save(walletCrypto);
     }
 
-    public WalletCrypto updateWalletCryptoSaldo(Utente utenteAutenticato, long walletCryptoId, double saldo) {
-        WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
-        walletCrypto.setSaldo(saldo);
+    public WalletCrypto saveWalletCrypto(WalletCrypto walletCrypto){
+        if (walletCrypto == null) {
+            throw new BadRequestException("Il wallet crypto non può essere nullo.");
+        }
+
+        if (walletCrypto.getSimbolo() == null || walletCrypto.getSimbolo().isEmpty()) {
+            throw new BadRequestException("Il simbolo della criptovaluta è obbligatorio.");
+        }
+
+        if (walletCrypto.getSaldo() < 0) {
+            throw new BadRequestException("Il saldo del wallet crypto non può essere negativo.");
+        }
+
         return walletCryptoRepo.save(walletCrypto);
     }
 
-    public WalletCrypto aggiornaSaldoWalletCrypto(Utente utenteAutenticato, long walletCryptoId, double variazioneSaldo) {
-        WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
-        walletCrypto.setSaldo(walletCrypto.getSaldo() + variazioneSaldo);
-        return walletCryptoRepo.save(walletCrypto);
-    }
-
-    public void deleteWalletCrypto(Utente utenteAutenticato, long walletCryptoId) {
-        WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
-        walletCryptoRepo.delete(walletCrypto);
-    }
+//    public WalletCrypto updateWalletCryptoSaldo(Utente utenteAutenticato, long walletCryptoId, double saldo) {
+//        WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
+//        walletCrypto.setSaldo(saldo);
+//        return walletCryptoRepo.save(walletCrypto);
+//    }
+//
+//    public WalletCrypto aggiornaSaldoWalletCrypto(Utente utenteAutenticato, long walletCryptoId, double variazioneSaldo) {
+//        WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
+//        walletCrypto.setSaldo(walletCrypto.getSaldo() + variazioneSaldo);
+//        return walletCryptoRepo.save(walletCrypto);
+//    }
+//
+//    public void deleteWalletCrypto(Utente utenteAutenticato, long walletCryptoId) {
+//        WalletCrypto walletCrypto = getWalletCryptoById(utenteAutenticato, walletCryptoId);
+//        walletCryptoRepo.delete(walletCrypto);
+//    }
 }
 
 

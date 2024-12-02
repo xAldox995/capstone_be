@@ -25,14 +25,14 @@ public class WalletCryptoController {
     @Autowired
     private WalletCryptoServ walletCryptoServ;
 
-    @PostMapping
-    public WalletCrypto postWalletCrypto(@AuthenticationPrincipal Utente utenteAutenticato, @RequestBody WalletCryptoDTO body) {
-        if (utenteAutenticato == null) {
-            throw new UnauthorizedException("Utente non autenticato");
-        }
-        System.out.println("Utente autenticato: " + utenteAutenticato);
-        return walletCryptoServ.postWalletCrypto(utenteAutenticato, body);
-    }
+//    @PostMapping
+//    public WalletCrypto postWalletCrypto(@AuthenticationPrincipal Utente utenteAutenticato, @RequestBody WalletCryptoDTO body) {
+//        if (utenteAutenticato == null) {
+//            throw new UnauthorizedException("Utente non autenticato");
+//        }
+//        System.out.println("Utente autenticato: " + utenteAutenticato);
+//        return walletCryptoServ.postWalletCrypto(utenteAutenticato, body);
+//    }
 
     @GetMapping
     public List<WalletCrypto> getAllWalletCryptos(@AuthenticationPrincipal Utente utenteAutenticato) {
@@ -49,8 +49,8 @@ public class WalletCryptoController {
         return walletCryptoServ.updateWalletCrypto(utenteAutenticato, walletCryptoId, body);
     }
 
-    @DeleteMapping("/{walletCryptoId}")
-    public void deleteWalletCrypto(@AuthenticationPrincipal Utente utenteAutenticato, @PathVariable long walletCryptoId) {
-        walletCryptoServ.deleteWalletCrypto(utenteAutenticato, walletCryptoId);
-    }
+//    @DeleteMapping("/{walletCryptoId}")
+//    public void deleteWalletCrypto(@AuthenticationPrincipal Utente utenteAutenticato, @PathVariable long walletCryptoId) {
+//        walletCryptoServ.deleteWalletCrypto(utenteAutenticato, walletCryptoId);
+//    }
 }

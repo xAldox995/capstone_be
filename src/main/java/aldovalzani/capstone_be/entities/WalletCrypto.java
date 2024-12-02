@@ -17,8 +17,6 @@ public class WalletCrypto {
     @GeneratedValue
     @Setter(AccessLevel.NONE)
     private long id;
-    @Column(name = "nome_crypto")
-    private String nomeCrypto;
     private String simbolo;
     private double saldo; //-> indico la quantità di crypto che detiene il cliente
     private String indirizzo; //-> indirizzo della blockchain
@@ -32,8 +30,7 @@ public class WalletCrypto {
     @JsonBackReference
     private Wallet wallet;
 
-    public WalletCrypto(String nomeCrypto, String simbolo, double saldo, String indirizzo, String publicKey, String privateKey, Wallet wallet) {
-        this.nomeCrypto = nomeCrypto;
+    public WalletCrypto(String simbolo, double saldo, String indirizzo, String publicKey, String privateKey, Wallet wallet) {
         this.simbolo =simbolo;
         this.saldo = saldo;
         this.indirizzo = indirizzo;
