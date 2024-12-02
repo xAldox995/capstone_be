@@ -13,7 +13,7 @@ import java.util.Map;
 public class CryptoCompareServ {
     @Autowired
     private RestTemplate restTemplate;
-    @Value("${fetch.url}")
+    @Value("${fetch.url.price}")
     private String fetchUrlBase;//->corrisponde a questo URL per ora https://min-api.cryptocompare.com/data/price
     @Value("${api.key}")
     private String apiKey;
