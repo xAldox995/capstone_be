@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface WalletCryptoRepo extends JpaRepository<WalletCrypto, Long> {
-    Optional<WalletCrypto> findByNomeCryptoAndWallet_Id(String nome, long walletId);
+    Optional<WalletCrypto> findBySimboloAndWallet_Id(String simbolo, long walletId);
 
     List<WalletCrypto> findAllByWallet_id(long walletId);
 }

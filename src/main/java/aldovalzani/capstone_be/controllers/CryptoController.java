@@ -24,4 +24,28 @@ public class CryptoController {
             @RequestParam String currency){
         return cryptoCompareServ.getCryptoPrice(symbol,currency);
     }
+
+    @GetMapping("/crypto/prices/details")
+    public Map<String, Object> fetchCryptoPriceDetails(
+            @RequestParam String symbols,
+            @RequestParam String currencies) {
+        return cryptoCompareServ.getCryptoPriceDetails(symbols, currencies);
+    }
+
+    @GetMapping("/crypto/market-history")
+    public Map<String, Object> fetchCryptoMarketHistory(
+            @RequestParam String symbol,
+            @RequestParam String currency,
+            @RequestParam(defaultValue = "30") int limit) {
+        return cryptoCompareServ.getCryptoMercatoHystory(symbol, currency, limit);
+    }
+
+    @GetMapping("/crypto/top/volume")
+    public Map<String, Object> fetchTopCryptosByVolume(
+            @RequestParam String currency,
+            @RequestParam(defaultValue = "10") int limit) {
+        return cryptoCompareServ.getTopCryptosByVolume(currency, limit);
+    }
+
+
 }
