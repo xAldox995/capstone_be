@@ -21,7 +21,7 @@ public class CryptoController {
     @GetMapping ("/crypto/price")
     public Map<String,Double> fetchCryptoPrice(
             @RequestParam String symbol,
-            @RequestParam String currency){
+            @RequestParam (defaultValue ="EUR") String currency){
         return cryptoCompareServ.getCryptoPrice(symbol,currency);
     }
 
