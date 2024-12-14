@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class WalletCryptoServ {
@@ -27,8 +29,10 @@ public class WalletCryptoServ {
     private WalletServ walletServ;
     @Autowired
     private KeyGenerator keyGenerator;
+    @Autowired
+    private CryptoCompareServ cryptoCompareServ;
 
-    public WalletCrypto postWalletCrypto(Utente utenteAutenticato, String simbolo,double saldo) {
+    public WalletCrypto postWalletCrypto(Utente utenteAutenticato, String simbolo, double saldo) {
         Wallet walletfound = walletServ.getWalletByUtente(utenteAutenticato);
 
         KeyPair keyPair = keyGenerator.generateKeyPair();
@@ -52,10 +56,10 @@ public class WalletCryptoServ {
         return this.walletCryptoRepo.findAllByWallet_id(walletfound.getId());
     }
 
-    public WalletCrypto findWalletCryptoBySimbolo(Utente utenteAutenticato, String simbolo){
+    public WalletCrypto findWalletCryptoBySimbolo(Utente utenteAutenticato, String simbolo) {
         Wallet walletFound = walletServ.getWalletByUtente(utenteAutenticato);
-        return walletCryptoRepo.findBySimboloAndWallet_Id(simbolo,walletFound.getId()).orElseThrow(
-                ()-> new NotFoundException("WalletCrypto con simbolo " + simbolo + " non trovato per l'utente.")
+        return walletCryptoRepo.findBySimboloAndWallet_Id(simbolo, walletFound.getId()).orElseThrow(
+                () -> new NotFoundException("WalletCrypto con simbolo " + simbolo + " non trovato per l'utente.")
         );
     }
 
@@ -75,7 +79,7 @@ public class WalletCryptoServ {
         return walletCryptoRepo.save(walletCrypto);
     }
 
-    public WalletCrypto saveWalletCrypto(WalletCrypto walletCrypto){
+    public WalletCrypto saveWalletCrypto(WalletCrypto walletCrypto) {
         if (walletCrypto == null) {
             throw new BadRequestException("Il wallet crypto non può essere nullo.");
         }
@@ -89,6 +93,16 @@ public class WalletCryptoServ {
         }
 
         return walletCryptoRepo.save(walletCrypto);
+    }
+
+    public Map<String, Double> getWalletCryptosBalance(Utente utente) {
+        Wallet walletFound = walletServ.getWalletByUtente(utente);
+        List<WalletCrypto> walletCryptoList = walletCryptoRepo.findByWallet(walletFound);
+        Map<String, Double> results = new HashMap<>();
+        for (WalletCrypto walletCrypto : walletCryptoList) {
+            results.put(walletCrypto.getSimbolo(), walletCrypto.getSaldo() * cryptoCompareServ.getCryptoPrice(walletCrypto.getSimbolo(), "EUR").get("EUR"));
+        }
+        return results;
     }
 
 //    public WalletCrypto updateWalletCryptoSaldo(Utente utenteAutenticato, long walletCryptoId, double saldo) {

@@ -1,6 +1,7 @@
 package aldovalzani.capstone_be.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class WalletCrypto {
 
     @ManyToOne
     @JoinColumn(name = "id_wallet")
-    @JsonBackReference
+   @JsonIgnoreProperties("walletCryptoList")
     private Wallet wallet;
 
     public WalletCrypto(String simbolo, double saldo, String indirizzo, String publicKey, String privateKey, Wallet wallet) {
