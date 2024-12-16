@@ -50,7 +50,7 @@ public class WalletCryptoController {
         return walletCryptoServ.updateWalletCrypto(utenteAutenticato, walletCryptoId, body);
     }
 
-    @GetMapping("/giacomo")
+    @GetMapping("/wallets_value")
     public Map<String,Double> getWalletCryptoBalance(@AuthenticationPrincipal Utente utenteAutenticato){
         return walletCryptoServ.getWalletCryptosBalance(utenteAutenticato);
     }
