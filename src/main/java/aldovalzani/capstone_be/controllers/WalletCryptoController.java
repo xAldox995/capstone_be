@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /*
@@ -39,14 +40,19 @@ public class WalletCryptoController {
         return walletCryptoServ.findAllWalletsCrypto(utenteAutenticato);
     }
 
-    @GetMapping("/{walletCryptoId}")
-    public WalletCrypto getWalletCryptoById(@AuthenticationPrincipal Utente utenteAutenticato, @PathVariable long walletCryptoId) {
+    @GetMapping("/{id}")
+    public WalletCrypto getWalletCryptoById(@AuthenticationPrincipal Utente utenteAutenticato, @PathVariable("id") long walletCryptoId) {
         return walletCryptoServ.getWalletCryptoById(utenteAutenticato, walletCryptoId);
     }
 
     @PutMapping("/{walletCryptoId}")
     public WalletCrypto updateWalletCrypto(@AuthenticationPrincipal Utente utenteAutenticato, @PathVariable long walletCryptoId, @RequestBody WalletCryptoDTO body) {
         return walletCryptoServ.updateWalletCrypto(utenteAutenticato, walletCryptoId, body);
+    }
+
+    @GetMapping("/wallets_value")
+    public Map<String,Double> getWalletCryptoBalance(@AuthenticationPrincipal Utente utenteAutenticato){
+        return walletCryptoServ.getWalletCryptosBalance(utenteAutenticato);
     }
 
 //    @DeleteMapping("/{walletCryptoId}")
