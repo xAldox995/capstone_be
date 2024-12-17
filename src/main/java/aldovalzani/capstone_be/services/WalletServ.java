@@ -19,8 +19,10 @@ public class WalletServ {
     private CryptoCompareServ cryptoCompareServ;
 
     public Wallet postWalletForUtente(Utente utente) {
-        Utente utenteFound = walletRepo.findByUtente(utente).orElseThrow(()->
-                new BadRequestException("L'utente con id " + utente.getId() + " ha già un wallet")).getUtente();
+        Optional<Wallet> existingWallet = walletRepo.findByUtente(utente);
+        if (existingWallet.isPresent()) {
+            throw new BadRequestException("L'utente con id " + utente.getId() + " ha già un wallet");
+        }
 
         Wallet newWallet = new Wallet();
         newWallet.setUtente(utente);
