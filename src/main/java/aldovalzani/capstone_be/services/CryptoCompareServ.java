@@ -72,6 +72,7 @@ public class CryptoCompareServ {
     public Map<String, Object> getTopCryptosByVolume(String currency, int limit) {
         try {
             String fullUrl = fetchUrlBaseVolume + "?limit=" + limit + "&tsym=" + currency + "&api_key=" + apiKey;
+            System.out.println("Calling URL: " + fullUrl);
             Map<String, Object> response = restTemplate.getForObject(fullUrl, Map.class);
             System.out.println("Response from CryptoCompare API (Top Cryptos by Volume): " + response);
             if (response == null || !response.containsKey("Data")) {

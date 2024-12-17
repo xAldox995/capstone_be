@@ -35,14 +35,14 @@ public class CryptoController {
     @GetMapping("/crypto/market-history")
     public Map<String, Object> fetchCryptoMarketHistory(
             @RequestParam String symbol,
-            @RequestParam String currency,
+            @RequestParam (defaultValue = "EUR") String currency,
             @RequestParam(defaultValue = "30") int limit) {
         return cryptoCompareServ.getCryptoMercatoHystory(symbol, currency, limit);
     }
 
     @GetMapping("/crypto/top/volume")
     public Map<String, Object> fetchTopCryptosByVolume(
-            @RequestParam String currency,
+            @RequestParam (defaultValue = "EUR") String currency,
             @RequestParam(defaultValue = "10") int limit) {
         return cryptoCompareServ.getTopCryptosByVolume(currency, limit);
     }

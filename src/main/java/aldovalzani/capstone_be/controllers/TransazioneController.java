@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.stream.Collectors;
 
 /*
-http://localhost:3001/wallets/me/cryptos/{walletCryptoId}/transactions
+http://localhost:3001/api/transazioni
  */
 @RestController
 @RequestMapping("api/transazioni")
